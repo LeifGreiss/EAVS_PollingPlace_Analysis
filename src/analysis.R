@@ -99,7 +99,20 @@ EAVS$year = as.numeric(EAVS$year)
 # Create a column for participation rates
 EAVS = EAVS %>%
   mutate(participation = F1a/A1a,
+         participation_p = F1b/A1a,
          polling_per_voter = D2a/A1a*10000)# This is ratio to find the number of polling places per every 10,000 people
+
+# Remove Inf and Nan Values from mutated cols
+EAVS$participation[is.infinite(EAVS$participation) | is.nan(EAVS$participation)]= NA
+EAVS$participation_p[is.infinite(EAVS$participation_p) | is.nan(EAVS$participation_p)]= NA
+EAVS$polling_per_voter[is.infinite(EAVS$polling_per_voter) | is.nan(EAVS$polling_per_voter)]= NA
+
+EAVS%>%
+  filter(participation_p < 1 & participation > 0, 
+         polling_per_voter > 0, D2a > 2)%>%
+  ggplot(aes(participation_p, polling_per_voter)) +
+  geom_point() +
+  geom_smooth()
 
 # Time for analysis
 
@@ -107,11 +120,16 @@ EAVS = EAVS %>%
 EAVS_state = EAVS%>%
   group_by(State, year)%>%
   summarise(polling_places = sum(D2a, na.rm = TRUE),
-            poll_ratio = mean(polling_per_voter, na.rm = TRUE))
+            poll_ratio = mean(polling_per_voter, na.rm = TRUE),
+            participation = mean(participation, na.rm = TRUE))
   
 EAVS_state%>%
   ggplot(aes(year, polling_places)) +
   geom_line(aes(group = State, color = State))
+
+EAVS_state%>%
+  ggplot(aes(participation, poll_ratio)) +
+  geom_point()
 
 # create seperate frame just for 2008 and 2016
 EAVS_state_gather = EAVS_state %>% 
@@ -121,8 +139,17 @@ EAVS_state_gather = EAVS_state %>%
          ratio.lag = lag(poll_ratio),
          ratio.pct.change = (poll_ratio - ratio.lag) / lag(poll_ratio))
 
+# Do the same as above but with 2012 and 2016
 EAVS_state_gather2 = EAVS_state %>% 
   filter(year == 2012 | year == 2016)%>%
+  mutate(lag = lag(polling_places),
+         pct.change = (polling_places - lag) / lag(polling_places),
+         ratio.lag = lag(poll_ratio),
+         ratio.pct.change = (poll_ratio - ratio.lag) / lag(poll_ratio))
+
+# Let's do the same but with 2014 and 2016 
+EAVS_state_gather3 = EAVS_state %>% 
+  filter(year == 2014 | year == 2016)%>%
   mutate(lag = lag(polling_places),
          pct.change = (polling_places - lag) / lag(polling_places),
          ratio.lag = lag(poll_ratio),
@@ -140,7 +167,7 @@ pp_change0816 = EAVS_state_gather%>%
   ggplot(aes(State, pct.change)) +
   geom_bar(stat = "identity") + 
   coord_flip() +
-  labs(title = "Percent Change of \nPhysical Polling \nPlaces 2008-2016"
+  labs(title = "Percent Change of Physical Polling Places 2008-2016"
 )
 
 pr_change0816 = EAVS_state_gather%>%
@@ -148,31 +175,49 @@ pr_change0816 = EAVS_state_gather%>%
   ggplot(aes(State, ratio.pct.change)) +
   geom_bar(stat = "identity") + 
   coord_flip() +
-  labs(title = "Percent change of \nRatio of Polling \nPlaces to Voters \n2008-2016"
+  labs(title = "Percent change of Ratio of Polling Places to Voters 2008-2016"
 )
-pp_change1016 = EAVS_state_gather2%>%
+pp_change1216 = EAVS_state_gather2%>%
   filter(year == 2016)%>%
   ggplot(aes(State, pct.change)) +
   geom_bar(stat = "identity") + 
   coord_flip() +
-  labs(title = "Percent Change of \nPhysical Polling \nPlaces 2010-2016"
+  labs(title = "Percent Change of Physical Polling Places 2012-2016"
 )
 
-pr_change1016 = EAVS_state_gather2%>%
+pr_change1216 = EAVS_state_gather2%>%
   filter(year == 2016)%>%
   ggplot(aes(State, ratio.pct.change)) +
   geom_bar(stat = "identity") + 
   coord_flip() +
-  labs(title = "Percent change of \nRatio of Polling \nPlaces to Voters \n2010-2016"
+  labs(title = "Percent change of Ratio of Polling Places to Voters 2012-2016"
 )
 
+pp_change1416 = EAVS_state_gather3%>%
+  filter(year == 2016)%>%
+  ggplot(aes(State, pct.change)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  labs(title = "Percent Change of Physical Polling Places 2014-2016"
+  )
+
+pr_change1416 = EAVS_state_gather3%>%
+  filter(year == 2016)%>%
+  ggplot(aes(State, ratio.pct.change)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  labs(title = "Percent change of Ratio of Polling Places to Voters 2014-2016"
+  )
+pp_change1416
+pr_change1416
+
 # Compare changes in the number of physical polling places
-grid.arrange(pp_change0816, pp_change1016, nrow = 1)
+grid.arrange(pp_change0816, pp_change1216, nrow = 1)
 
 # Compare changes in polling place ration
-grid.arrange(pr_change0816, pr_change1016, nrow = 1)
+grid.arrange(pr_change0816, pr_change1216, nrow = 1)
 
-# For checking states if they appear to be outliers
+# For checking outliers or incorrect data
 EAVS_inspect = EAVS%>%
-  filter(State == "VA")
+  filter(polling_per_voter > 1000)
 

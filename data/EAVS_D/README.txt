@@ -40,3 +40,15 @@ Only one Utah county reported numerical data on physical polling places in
 Virginia appears to have under reported in 2012 as well.
 As for Iowa, they did not report the the number of physical polling places to the 2016 
 EAVS.
+
+
+
+
+
+
+
+
+
+
+
+

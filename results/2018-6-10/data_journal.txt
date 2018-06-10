@@ -23,7 +23,7 @@ Mississippi may be worth looking into.
 
 Three states saw no gross increase or decrease: Oregon, Connecticut, and Massachussets
 
-What we know: 
+What I know: 
 
 Colorado and Washington are largely irrelevant though fewer physical polling
 places could prove problematic to homeless people. 
@@ -32,9 +32,48 @@ Most states appear to have seen a decrease in polling places. Not only that ther
 was a decrease in the number of polling places per every 10,000 voters decreased as a 
 well.
 
-12:25am
+12:25pm
 I did the same thing above but with the data from the 2012 and 2016 surveys. 
 
-What we know: 
+What I know: 
 
-This echoes the data from 2008 and 2016 comparison most states saw a decrease 
+This echoes the data from 2008 and 2016 comparison most states saw a decrease in 
+the percentage of polling places and in the number of polling places per every 
+10,000 voters decreased.
+
+1:30pm
+This time I looked at 2014 and 2016 results where similar once again it generally appeared
+that the number of polling places were decreasing.
+
+2:50pm
+I looked at the voter participation rates versus the ratio of polling places per person
+and there doesn't appear to be a strong correlation between the two variables. At most 
+there is is a slight positive one, but it does appear that the majority of jurisdictions 
+clump between 25 percent and 75 percent participation and in that area is where the most
+variation occurs and the majority of jurisdictions that have high rates of physical 
+polling places per 10,000. 
+
+Moving on from here: 
+I need to determine if there was any measurable impact in voter participation due to 
+decreasing numbers of physical polling places or a failure to create new physical polling 
+places. Anecdotal evidence tells us that longer lines do decrease participation. What also
+needs to be accounted for is that:
+
+132,609,063 ballots were cast in '08 participation at 61.6 percent
+90,912,015 in '10 participation at 41 percent
+130,292,355 in '12 participation at 58.2 percent
+83,262,122 in '14 participation at 35.9 percent
+138,846,571 in '16 participation at 60.1 percent
+
+I will have to find a way to show correlation if possible despite the varying turnouts 
+year to year.
+
+ 
+
+
+
+
+
+
+
+
