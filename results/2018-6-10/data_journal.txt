@@ -1,0 +1,40 @@
+Data Journal and Notes:
+
+6-10-2018: 
+11:00am 
+After doing some basic analysis of the data primarily looking at the percentage change of 
+physical polling between 2008 and 2016 in various states it is worth noting there are 
+several outliers.
+
+Huge decreases in the number of physical polling places: Colorado, Washington, Utah, 
+Puerto Rico and Iowa.
+Colorado and Washington now primarily conduct elections by mail and in the 2016 general 
+election 21 counties in Utah participated in a vote by mail. 
+As for Iowa, they did not report the the number of physical polling places to the 2016 
+EAVS.
+I'm not sure about Puerto Rico though and that could be worth investigating in a separate 
+analysis.
+
+Several states also saw huge increases: Tennessee, Mississippi and Delaware Illinois.
+Tennessee and Illinois didn't report the number of physical polling places in the state
+for the 2008 EAVS. 
+Delaware just appears to have increased the number of polling places. 
+Mississippi may be worth looking into. 
+
+Three states saw no gross increase or decrease: Oregon, Connecticut, and Massachussets
+
+What we know: 
+
+Colorado and Washington are largely irrelevant though fewer physical polling
+places could prove problematic to homeless people. 
+
+Most states appear to have seen a decrease in polling places. Not only that there 
+was a decrease in the number of polling places per every 10,000 voters decreased as a 
+well.
+
+12:25am
+I did the same thing above but with the data from the 2012 and 2016 surveys. 
+
+What we know: 
+
+This echoes the data from 2008 and 2016 comparison most states saw a decrease 

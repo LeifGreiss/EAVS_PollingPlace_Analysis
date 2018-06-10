@@ -21,3 +21,5 @@ with calculations once the data is imported to R.
 Note: For the 2012 and 2014 surveys Wisconsin's data is mostly at the precinct level and 
 for the 2016 survey at a city and town level therefore for year to year analysis WI is not
 particularly useful.
+
+Note: North Dakota did not report the numbers for A1a in any of the EAVS surveys

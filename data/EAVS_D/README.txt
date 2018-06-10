@@ -28,3 +28,15 @@ with calculations once the data is imported to R.
 Note: For the 2012 and 2014 surveys Wisconsin's data is mostly at the precinct level and 
 for the 2016 survey at a city and town level therefore for year to year analysis WI is not
 particularly useful.
+
+Note: 
+Tennessee and Illinois didn't report the number of physical polling places in the state
+for the 2008 EAVS. 
+Georgia didn't report Section D data in 2012. 
+New Hampshire only reporter 1's and 
+0's in 2012. 
+Only one Utah county reported numerical data on physical polling places in 
+2012.
+Virginia appears to have under reported in 2012 as well.
+As for Iowa, they did not report the the number of physical polling places to the 2016 
+EAVS.

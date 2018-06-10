@@ -5,6 +5,7 @@
 # import packages
 library(tidyverse)
 library(readxl)
+library(gridExtra)
 
 # import EAVS section A
 EAVS2016A = read_excel("data/EAVS_A/2016EAVS2.xlsx")%>%
@@ -42,36 +43,38 @@ EAVS2010F = read_excel("data/EAVS_F/2010EAVS-F.xlsx")%>%
 EAVS2008F = read_excel("data/EAVS_F/2008EAVS-F.xls")%>%
   rename(State = STATE_, Jurisdiction = JurisName)
 
+# Create a vector to deal with states or territories that cause problems
+badstate = c("AS", "WI", "VI")
 # Combine the frames from the same survey years, slim them down to what we are interested in and remove Wisconsin entries (See the READMEs for the data)
 EAVS2016 = EAVS2016A %>%
   full_join(EAVS2016D, by = c("State", "Jurisdiction"))%>%
   full_join(EAVS2016F, by = c("State", "Jurisdiction"))%>%
   mutate(year = rep("2016", length(6467)))%>%
-  filter(State != "WI")%>%
+  filter(!State %in% badstate)%>%
   select(State, Jurisdiction, year, A1a, A3a, A4a, D1a, D2a, D2b, D2c, D2e, D2f, F1a, F1b)
 EAVS2014 = EAVS2014A %>%
   full_join(EAVS2014D, by = c("State", "Jurisdiction"))%>%
   full_join(EAVS2014F, by = c("State", "Jurisdiction"))%>%
   mutate(year = rep("2014", length(8202)))%>%
-  filter(State != "WI")%>%
+  filter(!State %in% badstate)%>%
   select(State, Jurisdiction, year, A1a, A3a, A4a, D1a, D2a, D2b, D2c, D2e, D2f, F1a, F1b)
 EAVS2012 = EAVS2012A %>%
   full_join(EAVS2012D, by = c("State", "Jurisdiction"))%>%
   full_join(EAVS2012F, by = c("State", "Jurisdiction"))%>%
   mutate(year = rep("2012", length(8154)))%>%
-  filter(State != "WI")%>%
+  filter(!State %in% badstate)%>%
   select(State, Jurisdiction, year, A1a, A3a, A4a, D1a, D2a, D2b, D2c, D2e, D2f, F1a, F1b)
 EAVS2010 = EAVS2010A %>%
   full_join(EAVS2010D, by = c("State", "Jurisdiction"))%>%
   full_join(EAVS2010F, by = c("State", "Jurisdiction"))%>%
   mutate(year = rep("2010", length(4692)))%>%
-  filter(State != "WI")%>%
+  filter(!State %in% badstate)%>%
   select(State, Jurisdiction, year, A1a, A3a, A4a, D1a, D2a, D2b, D2c, D2e, D2f, F1a, F1b)
 EAVS2008 = EAVS2008A %>%
   full_join(EAVS2008D, by = c("State", "Jurisdiction"))%>%
   full_join(EAVS2008F, by = c("State", "Jurisdiction"))%>%
   mutate(year = rep("2008", length(4627)))%>%
-  filter(State != "WI")%>%
+  filter(!State %in% badstate, Jurisdiction != "LICKING")%>% # Reporting on Licking was a problem in 2008 so exclude it
   select(State, Jurisdiction, year, A1a, A3a, A4a, D1a, D2a, D2b, D2c, D2e, D2f, F1a, F1b)
 
 # Append the data sets to create a giant tidyish one and arrange by state and jurisdiction 
@@ -96,18 +99,80 @@ EAVS$year = as.numeric(EAVS$year)
 # Create a column for participation rates
 EAVS = EAVS %>%
   mutate(participation = F1a/A1a,
-         polling_per_voter = D1a/A1a*1000)
-
-# Create frames for midterms and presidential elections
-EAVS_mid = filter(EAVS, year == "2010" | year == "2014")
-EAVS_pres = filter(EAVS, year == "2008" | year == "2012" | year == "2016")
+         polling_per_voter = D2a/A1a*10000)# This is ratio to find the number of polling places per every 10,000 people
 
 # Time for analysis
 
-# Summarize
-EAVS %>% 
+# Summarize states
+EAVS_state = EAVS%>%
   group_by(State, year)%>%
-  summarise(polling_places = sum(D1a, na.rm = TRUE))
+  summarise(polling_places = sum(D2a, na.rm = TRUE),
+            poll_ratio = mean(polling_per_voter, na.rm = TRUE))
+  
+EAVS_state%>%
+  ggplot(aes(year, polling_places)) +
+  geom_line(aes(group = State, color = State))
 
-ggplot(EAVS_state, aes(year, polling_places, color = State)) +
-  geom_smooth()
+# create seperate frame just for 2008 and 2016
+EAVS_state_gather = EAVS_state %>% 
+  filter(year == 2008 | year == 2016)%>%
+  mutate(lag = lag(polling_places),
+         pct.change = (polling_places - lag) / lag(polling_places),
+         ratio.lag = lag(poll_ratio),
+         ratio.pct.change = (poll_ratio - ratio.lag) / lag(poll_ratio))
+
+EAVS_state_gather2 = EAVS_state %>% 
+  filter(year == 2012 | year == 2016)%>%
+  mutate(lag = lag(polling_places),
+         pct.change = (polling_places - lag) / lag(polling_places),
+         ratio.lag = lag(poll_ratio),
+         ratio.pct.change = (poll_ratio - ratio.lag) / lag(poll_ratio))
+
+# show if there is a general decline
+EAVS_state_gather%>%
+  filter(polling_places <= 4000)%>%
+  ggplot(aes(year, polling_places)) +
+  geom_line(aes(group = State)) +
+  geom_point(aes(group = State))
+
+pp_change0816 = EAVS_state_gather%>%
+  filter(year == 2016)%>%
+  ggplot(aes(State, pct.change)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  labs(title = "Percent Change of \nPhysical Polling \nPlaces 2008-2016"
+)
+
+pr_change0816 = EAVS_state_gather%>%
+  filter(year == 2016)%>%
+  ggplot(aes(State, ratio.pct.change)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  labs(title = "Percent change of \nRatio of Polling \nPlaces to Voters \n2008-2016"
+)
+pp_change1016 = EAVS_state_gather2%>%
+  filter(year == 2016)%>%
+  ggplot(aes(State, pct.change)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  labs(title = "Percent Change of \nPhysical Polling \nPlaces 2010-2016"
+)
+
+pr_change1016 = EAVS_state_gather2%>%
+  filter(year == 2016)%>%
+  ggplot(aes(State, ratio.pct.change)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  labs(title = "Percent change of \nRatio of Polling \nPlaces to Voters \n2010-2016"
+)
+
+# Compare changes in the number of physical polling places
+grid.arrange(pp_change0816, pp_change1016, nrow = 1)
+
+# Compare changes in polling place ration
+grid.arrange(pr_change0816, pr_change1016, nrow = 1)
+
+# For checking states if they appear to be outliers
+EAVS_inspect = EAVS%>%
+  filter(State == "VA")
+
